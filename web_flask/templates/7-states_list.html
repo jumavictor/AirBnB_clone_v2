@@ -7,6 +7,11 @@
 	<title>HBNB</title>
 </head>
 <body>
-	<h1>Number: {{ n }} is {{ condition }}</h1>
+	<h1>States</h1>
+	<ul>
+		{% for state in states.values()|sort(attribute='name') %}
+      <li>State {{ state.id }}: <B>{{ state.name }}</B></lI>
+    {% endfor %}
+	</ul>
 </body>
 </html>
