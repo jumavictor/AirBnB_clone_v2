@@ -58,7 +58,7 @@ ubuntu@89-web-01:~/$ sudo ./0-setup_web_static.sh
   ubuntu@89-web-01:~/$ echo $?
   0
   ubuntu@89-web-01:~/$ ls -l /data
-  total 4
+ total 4
   drwxr-xr-x 1 ubuntu ubuntu     4096 Mar  7 05:17 web_static
   ubuntu@89-web-01:~/$ ls -l /data/web_static
   total 8
