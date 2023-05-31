@@ -1,54 +1,27 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Bash script that sets up web servers for the deployment of web_static
+sudo apt-get update
+sudo apt-get -y install nginx
+sudo ufw allow 'Nginx HTTP'
 
-# Check if Nginx is installed
-if ! [ -x "$(command -v nginx)" ]; then
-  echo "Nginx is not installed. Installing..."
-  apt-get install nginx
-fi
+sudo mkdir -p /data/
+sudo mkdir -p /data/web_static/
+sudo mkdir -p /data/web_static/releases/
+sudo mkdir -p /data/web_static/shared/
+sudo mkdir -p /data/web_static/releases/test/
+sudo touch /data/web_static/releases/test/index.html
+sudo echo "<html>
+  <head>
+  </head>
+  <body>
+    Holberton School
+  </body>
+</html>" | sudo tee /data/web_static/releases/test/index.html
 
-# Create the /data/ directory
-if ! [ -d /data ]; then
-  mkdir /data
-fi
+sudo ln -s -f /data/web_static/releases/test/ /data/web_static/current
 
-# Create the /data/web_static/ directory
-if ! [ -d /data/web_static ]; then
-  mkdir /data/web_static
-fi
+sudo chown -R ubuntu:ubuntu /data/
 
-# Create the /data/web_static/releases/ directory
-if ! [ -d /data/web_static/releases ]; then
-  mkdir /data/web_static/releases
-fi
+sudo sed -i '/listen 80 default_server/a location /hbnb_static { alias /data/web_static/current/;}' /etc/nginx/sites-enabled/default
 
-# Create the /data/web_static/shared/ directory
-if ! [ -d /data/web_static/shared ]; then
-  mkdir /data/web_static/shared
-fi
-
-# Create the /data/web_static/releases/test/ directory
-if ! [ -d /data/web_static/releases/test ]; then
-  mkdir /data/web_static/releases/test
-fi
-
-# Create a fake HTML file /data/web_static/releases/test/index.html
-echo "This is a test page." > /data/web_static/releases/test/index.html
-
-# Create a symbolic link /data/web_static/current linked to the /data/web_static/releases/test/ folder
-if [ -L /data/web_static/current ]; then
-  rm /data/web_static/current
-fi
-ln -s /data/web_static/releases/test /data/web_static/current
-
-# Give ownership of the /data/ directory to the ubuntu user AND group
-chown -R ubuntu:ubuntu /data
-
-# Update the Nginx configuration to serve the content of /data/web_static/current/ to hbnb_static
-# Use alias inside your Nginx configuration
-# Tip
-
-# Restart Nginx
-service nginx restart
-
-# Exit successfully
-exit 0
+sudo service nginx restart
