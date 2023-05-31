@@ -6,21 +6,24 @@ from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from datetime import datetime
 
 
 class State(BaseModel, Base):
     """Representation of state """
     if getenv('HBNB_TYPE_STORAGE') == 'db':
         __tablename__ = 'states'
-        name = Column(String(128),
-                      nullable=False)
-        cities = relationship("City", cascade="all, delete",
-                              backref="states")
+        name = Column(String(128), nullable=False)
+        cities = relationship("City", cascade="all, delete", backref="states")
     else:
         name = ""
 
     def __init__(self, *args, **kwargs):
         """initializes state"""
+        if 'created_at' in kwargs and isinstance(kwargs['created_at'], str):
+            kwargs['created_at'] = datetime.strptime(kwargs['created_at'], '%Y-%m-%d %H:%M:%S.%f')
+        if 'updated_at' in kwargs and isinstance(kwargs['updated_at'], str):
+            kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'], '%Y-%m-%d %H:%M:%S.%f')
         super().__init__(*args, **kwargs)
 
     if getenv('HBNB_TYPE_STORAGE') != 'db':
@@ -33,3 +36,4 @@ class State(BaseModel, Base):
                 if city.state_id == self.id:
                     list_city.append(city)
             return list_city
+
